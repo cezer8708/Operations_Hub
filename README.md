@@ -17,6 +17,7 @@ streamlit run app.py
 - `ARTWORK_GENERATOR_URL`: Artwork generator app URL
 - `PDGA_CONTACT_SCRAPER_URL`: PDGA scraper app URL
 - `MACH_FAMILY_FORECASTING_URL`: Mach Family planner URL
+- `BCTS_FORM_URL`: Optional BCTS form URL; when unset the hub keeps the card in under-construction mode
 - `IT_TICKETS_URL`: IT tickets app URL
 
 ## Deploy

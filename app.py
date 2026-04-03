@@ -81,6 +81,124 @@ ARTWORK_GENERATOR_URL = get_env("ARTWORK_GENERATOR_URL", "https://dga-artwork-pr
 PDGA_CONTACT_SCRAPER_URL = get_env("PDGA_CONTACT_SCRAPER_URL", "https://dga-scraper-app.streamlit.app")
 MACH_FAMILY_FORECASTING_URL = get_env("MACH_FAMILY_FORECASTING_URL", "https://mach-family-po-planner.streamlit.app")
 IT_TICKETS_URL = get_env("IT_TICKETS_URL", "https://it-tickets-jigv.onrender.com")
+BCTS_FORM_URL = get_env("BCTS_FORM_URL", "")
+
+
+TOOL_ROWS = [
+    [
+        {
+            "label": "Sales",
+            "label_class": "sales",
+            "title": "Quote Tool",
+            "description": "Build quotes, process orders, generate the exact customer-facing PDFs, and jump into the processed-orders history page.",
+            "button_text": "Open Quote Tool",
+            "url": QUOTE_TOOL_URL,
+        },
+        {
+            "label": "Warehouse",
+            "label_class": "warehouse",
+            "title": "Orders / Warehouse Queue",
+            "description": "Jump into the warehouse app to review today's orders, move jobs in the queue, apply inventory, and work from the warehouse inventory layout.",
+            "button_text": "Open Queue",
+            "url": WAREHOUSE_QUEUE_URL,
+        },
+    ],
+    [
+        {
+            "label": "Custom Orders",
+            "label_class": "custom-orders",
+            "title": "DGA Custom Disc Ordering",
+            "description": "Open the custom disc ordering app for wholesale custom stamp and tournament ordering workflows.",
+            "button_text": "Open Custom Orders",
+            "url": CUSTOM_DISC_ORDERING_URL,
+        },
+        {
+            "label": "Creative",
+            "label_class": "creative",
+            "title": "Artwork Preview Generator",
+            "description": "Launch the artwork generator to build and review preview images for customer designs and internal approvals.",
+            "button_text": "Open Artwork",
+            "url": ARTWORK_GENERATOR_URL,
+        },
+    ],
+    [
+        {
+            "label": "Outreach",
+            "label_class": "outreach",
+            "title": "PDGA Event Contact Scraper",
+            "description": "Pull tournament director contact details and export event contact lists for outreach, planning, and operations follow-up.",
+            "button_text": "Open PDGA Scraper",
+            "url": PDGA_CONTACT_SCRAPER_URL,
+        },
+        {
+            "label": "Forecasting",
+            "label_class": "",
+            "title": "Mach Family Forecasting",
+            "description": "Open the Mach Family PO planner for live forecasting while the full hub experience is still being built out.",
+            "button_text": "Open Mach Family Forecasting",
+            "url": MACH_FAMILY_FORECASTING_URL,
+            "status": "In Progress • Live Planner",
+            "is_construction": True,
+        },
+    ],
+    [
+        {
+            "label": "Operations",
+            "label_class": "",
+            "title": "BCTS Form",
+            "description": "The BCTS Form is being built now, and this spot is reserved so it can drop straight into the hub when it's ready.",
+            "button_text": "Open BCTS Form" if BCTS_FORM_URL else "Under Construction",
+            "url": BCTS_FORM_URL,
+            "status": "Live" if BCTS_FORM_URL else "Under Construction • Coming Soon",
+            "is_construction": not bool(BCTS_FORM_URL),
+        },
+        {
+            "label": "Support",
+            "label_class": "support",
+            "title": "IT Tickets",
+            "description": "Jump into the IT ticket app to review submitted issues, track follow-up, and keep support requests moving.",
+            "button_text": "Open IT Tickets",
+            "url": IT_TICKETS_URL,
+        },
+    ],
+]
+
+
+def render_tool_card(tool: dict) -> None:
+    card_classes = ["welcome-card"]
+    if tool.get("is_construction"):
+        card_classes.append("is-construction")
+
+    label_classes = ["welcome-card-label"]
+    if tool.get("label_class"):
+        label_classes.append(tool["label_class"])
+
+    status_markup = ""
+    if tool.get("status"):
+        status_markup = f'<span class="welcome-card-status">{tool["status"]}</span>'
+
+    description = tool["description"].replace("'", "&apos;")
+
+    st.markdown(
+        f"""
+        <div class="{' '.join(card_classes)}">
+            <span class="{' '.join(label_classes)}">{tool["label"]}</span>
+            <h3>{tool["title"]}</h3>
+            <p>{description}</p>
+            {status_markup}
+        </div>
+        """,
+        unsafe_allow_html=True,
+    )
+
+    if tool.get("url"):
+        if hasattr(st, "link_button"):
+            st.link_button(tool["button_text"], tool["url"], use_container_width=True)
+        else:
+            st.markdown(f'[{tool["button_text"]}]({tool["url"]})')
+        return
+
+    st.button(tool["button_text"], use_container_width=True, disabled=True)
 
 
 def render_operations_hub() -> None:
@@ -389,143 +507,16 @@ def render_operations_hub() -> None:
     )
     st.markdown("</div>", unsafe_allow_html=True)
 
-    _, row_one_left, row_one_right, _ = st.columns([0.7, 2.0, 2.0, 0.7], gap="medium")
+    for row in TOOL_ROWS:
+        _, left_col, right_col, _ = st.columns([0.7, 2.0, 2.0, 0.7], gap="medium")
 
-    with row_one_left:
-        st.markdown(
-            """
-            <div class="welcome-card">
-                <span class="welcome-card-label sales">Sales</span>
-                <h3>Quote Tool</h3>
-                <p>Build quotes, process orders, generate the exact customer-facing PDFs, and jump into the processed-orders history page.</p>
-            </div>
-            """,
-            unsafe_allow_html=True,
-        )
-        if hasattr(st, "link_button"):
-            st.link_button("Open Quote Tool", QUOTE_TOOL_URL, use_container_width=True)
-        else:
-            st.markdown(f"[Open Quote Tool]({QUOTE_TOOL_URL})")
+        with left_col:
+            render_tool_card(row[0])
 
-    with row_one_right:
-        st.markdown(
-            """
-            <div class="welcome-card">
-                <span class="welcome-card-label warehouse">Warehouse</span>
-                <h3>Orders / Warehouse Queue</h3>
-                <p>Jump into the warehouse app to review today&apos;s orders, move jobs in the queue, apply inventory, and work from the warehouse inventory layout.</p>
-            </div>
-            """,
-            unsafe_allow_html=True,
-        )
-        if hasattr(st, "link_button"):
-            st.link_button("Open Queue", WAREHOUSE_QUEUE_URL, use_container_width=True)
-        else:
-            st.markdown(f"[Open Queue]({WAREHOUSE_QUEUE_URL})")
+        with right_col:
+            render_tool_card(row[1])
 
-    st.markdown('<div class="welcome-row"></div>', unsafe_allow_html=True)
-    _, row_two_left, row_two_right, _ = st.columns([0.7, 2.0, 2.0, 0.7], gap="medium")
-
-    with row_two_left:
-        st.markdown(
-            """
-            <div class="welcome-card">
-                <span class="welcome-card-label custom-orders">Custom Orders</span>
-                <h3>DGA Custom Disc Ordering</h3>
-                <p>Open the custom disc ordering app for wholesale custom stamp and tournament ordering workflows.</p>
-            </div>
-            """,
-            unsafe_allow_html=True,
-        )
-        if hasattr(st, "link_button"):
-            st.link_button("Open Custom Orders", CUSTOM_DISC_ORDERING_URL, use_container_width=True)
-        else:
-            st.markdown(f"[Open Custom Orders]({CUSTOM_DISC_ORDERING_URL})")
-
-    with row_two_right:
-        st.markdown(
-            """
-            <div class="welcome-card">
-                <span class="welcome-card-label creative">Creative</span>
-                <h3>Artwork Preview Generator</h3>
-                <p>Launch the artwork generator to build and review preview images for customer designs and internal approvals.</p>
-            </div>
-            """,
-            unsafe_allow_html=True,
-        )
-        if hasattr(st, "link_button"):
-            st.link_button("Open Artwork", ARTWORK_GENERATOR_URL, use_container_width=True)
-        else:
-            st.markdown(f"[Open Artwork]({ARTWORK_GENERATOR_URL})")
-
-    st.markdown('<div class="welcome-row"></div>', unsafe_allow_html=True)
-    _, row_three_left, row_three_right, _ = st.columns([0.7, 2.0, 2.0, 0.7], gap="medium")
-
-    with row_three_left:
-        st.markdown(
-            """
-            <div class="welcome-card">
-                <span class="welcome-card-label outreach">Outreach</span>
-                <h3>PDGA Event Contact Scraper</h3>
-                <p>Pull tournament director contact details and export event contact lists for outreach, planning, and operations follow-up.</p>
-            </div>
-            """,
-            unsafe_allow_html=True,
-        )
-        if hasattr(st, "link_button"):
-            st.link_button("Open PDGA Scraper", PDGA_CONTACT_SCRAPER_URL, use_container_width=True)
-        else:
-            st.markdown(f"[Open PDGA Scraper]({PDGA_CONTACT_SCRAPER_URL})")
-
-    with row_three_right:
-        st.markdown(
-            """
-            <div class="welcome-card is-construction">
-                <span class="welcome-card-label">Forecasting</span>
-                <h3>Mach Family Forecasting</h3>
-                <p>Open the Mach Family PO planner for live forecasting while the full hub experience is still being built out.</p>
-                <span class="welcome-card-status">In Progress • Live Planner</span>
-            </div>
-            """,
-            unsafe_allow_html=True,
-        )
-        if hasattr(st, "link_button"):
-            st.link_button("Open Mach Family Forecasting", MACH_FAMILY_FORECASTING_URL, use_container_width=True)
-        else:
-            st.markdown(f"[Open Mach Family Forecasting]({MACH_FAMILY_FORECASTING_URL})")
-
-    st.markdown('<div class="welcome-row"></div>', unsafe_allow_html=True)
-    _, row_four_left, row_four_right, _ = st.columns([0.7, 2.0, 2.0, 0.7], gap="medium")
-
-    with row_four_left:
-        st.markdown(
-            """
-            <div class="welcome-card is-construction">
-                <span class="welcome-card-label">Operations</span>
-                <h3>BCTS Form</h3>
-                <p>The BCTS Form is being built now, and this spot is reserved so it can drop straight into the hub when it&apos;s ready.</p>
-                <span class="welcome-card-status">Under Construction • Coming Soon</span>
-            </div>
-            """,
-            unsafe_allow_html=True,
-        )
-        st.button("Under Construction", use_container_width=True, disabled=True)
-
-    with row_four_right:
-        st.markdown(
-            """
-            <div class="welcome-card">
-                <span class="welcome-card-label support">Support</span>
-                <h3>IT Tickets</h3>
-                <p>Jump into the IT ticket app to review submitted issues, track follow-up, and keep support requests moving.</p>
-            </div>
-            """,
-            unsafe_allow_html=True,
-        )
-        if hasattr(st, "link_button"):
-            st.link_button("Open IT Tickets", IT_TICKETS_URL, use_container_width=True)
-        else:
-            st.markdown(f"[Open IT Tickets]({IT_TICKETS_URL})")
+        st.markdown('<div class="welcome-row"></div>', unsafe_allow_html=True)
 
     st.markdown("</div>", unsafe_allow_html=True)
     st.markdown("</div>", unsafe_allow_html=True)
