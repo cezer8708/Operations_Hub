@@ -1,0 +1,9 @@
+streamlit
+pandas
+gspread
+google-auth
+reportlab
+python-dotenv
+pytz
+requests
+PyPDF2
