@@ -74,7 +74,7 @@ def _asset_data_uri(path: str, mime_type: str) -> str:
 APP_LOGO_PATH = _get_app_logo_path()
 HUB_HEADER_LOGO_PATH = "assets/dga_logo_white.png" if os.path.exists("assets/dga_logo_white.png") else APP_LOGO_PATH
 QUOTE_PATENT_TILE_PATH = "assets/ahhhh-whit.png"
-QUOTE_TOOL_URL = get_env("QUOTE_TOOL_URL", "https://dga-quote-tool-v5.streamlit.app")
+QUOTE_TOOL_URL = get_env("QUOTE_TOOL_URL", "https://dga-quote-tool-v5.streamlit.app/~/+/")
 WAREHOUSE_QUEUE_URL = get_env("WAREHOUSE_QUEUE_URL", "https://dga-warehouse-inventory.netlify.app")
 CUSTOM_DISC_ORDERING_URL = get_env("CUSTOM_DISC_ORDERING_URL", "https://dga-custom-disc-ordering.onrender.com")
 ARTWORK_GENERATOR_URL = get_env("ARTWORK_GENERATOR_URL", "https://dga-artwork-preview-generator.streamlit.app")
