@@ -173,9 +173,11 @@ def render_tool_card(tool: dict) -> None:
     if tool.get("label_class"):
         label_classes.append(tool["label_class"])
 
-    status_markup = ""
-    if tool.get("status"):
-        status_markup = f'<span class="welcome-card-status">{tool["status"]}</span>'
+    status_text = tool.get("status", "")
+    status_classes = ["welcome-card-status"]
+    if not status_text:
+        status_classes.append("is-empty")
+    status_markup = f'<span class="{" ".join(status_classes)}">{status_text}</span>'
 
     description = tool["description"].replace("'", "&apos;")
 
@@ -245,23 +247,33 @@ def render_operations_hub() -> None:
                 position: relative;
                 overflow: hidden;
             }
+            [data-testid="stAppViewContainer"] .main .block-container {
+                position: relative;
+                z-index: 3;
+                max-width: 1200px;
+                padding-top: 0.55rem;
+                padding-bottom: 1.1rem;
+                padding-left: 0.9rem;
+                padding-right: 0.9rem;
+                box-sizing: border-box;
+            }
             .welcome-side-art {
                 position: fixed;
                 top: 0;
                 bottom: 0;
-                width: min(22vw, 300px);
+                width: min(16vw, 220px);
                 z-index: 1;
                 overflow: hidden;
                 pointer-events: none;
-                opacity: 0.92;
+                opacity: 0.9;
                 filter: grayscale(0.01) saturate(1.02) brightness(0.98) contrast(1.03);
             }
             .welcome-patent-bg {
                 position: fixed;
                 top: 0;
                 bottom: 0;
-                left: min(22vw, 300px);
-                right: min(22vw, 300px);
+                left: min(16vw, 220px);
+                right: min(16vw, 220px);
                 z-index: 0;
                 pointer-events: none;
                 opacity: 0.14;
@@ -294,14 +306,6 @@ def render_operations_hub() -> None:
             }
             .welcome-side-art-right img {
                 object-position: 42% center;
-            }
-            .welcome-shell {
-                position: relative;
-                z-index: 3;
-                padding: 4px 0 4px;
-                width: min(700px, calc(100vw - 4rem));
-                max-width: 700px;
-                margin: 0 auto;
             }
             .welcome-hero {
                 text-align: center;
@@ -342,12 +346,13 @@ def render_operations_hub() -> None:
             .welcome-card {
                 border: 1px solid rgba(255, 255, 255, 0.08);
                 border-radius: 16px;
-                padding: 10px 11px 8px;
+                padding: 14px 14px 12px;
                 background: rgba(17, 20, 26, 0.94);
-                height: 132px;
+                height: 204px;
                 display: flex;
                 flex-direction: column;
                 overflow: hidden;
+                box-sizing: border-box;
             }
             .welcome-card.is-construction {
                 border-color: rgba(255, 184, 76, 0.35);
@@ -412,38 +417,47 @@ def render_operations_hub() -> None:
                 border: 1px solid rgba(255, 197, 92, 0.26);
             }
             .welcome-card-status {
-                display: inline-block;
+                display: block;
                 margin-top: auto;
                 padding-top: 8px;
+                min-height: 1.1rem;
                 font-size: 0.69rem;
                 font-weight: 600;
                 letter-spacing: 0.04em;
                 text-transform: uppercase;
                 color: rgba(255, 214, 102, 0.9);
+                white-space: nowrap;
+                overflow: hidden;
+                text-overflow: ellipsis;
+            }
+            .welcome-card-status.is-empty {
+                visibility: hidden;
             }
             .welcome-card h3 {
-                margin: 0 0 4px;
-                font-size: 0.88rem;
+                margin: 0 0 6px;
+                font-size: 0.9rem;
             }
             .welcome-card p {
                 color: rgba(250, 250, 250, 0.74);
-                line-height: 1.25;
-                min-height: 58px;
+                line-height: 1.34;
+                flex: 1 1 auto;
+                min-height: 0;
                 margin: 0;
                 font-size: 0.74rem;
+                overflow: hidden;
             }
             .welcome-row {
-                margin-top: 7px;
+                margin-top: 0.7rem;
             }
             .stButton > button,
             [data-testid="stLinkButton"] a {
-                min-height: 2.3rem;
+                min-height: 2.5rem;
                 white-space: nowrap;
                 overflow: hidden;
                 text-overflow: ellipsis;
                 font-size: 0.92rem;
-                padding-left: 0.8rem;
-                padding-right: 0.8rem;
+                padding-left: 0.95rem;
+                padding-right: 0.95rem;
                 background: #ff3341;
                 color: #ffffff;
                 border: 1px solid #ff3341;
@@ -460,7 +474,18 @@ def render_operations_hub() -> None:
                 border-color: rgba(255, 51, 65, 0.3);
                 color: rgba(255, 255, 255, 0.72);
             }
-            @media (max-width: 1100px) {
+            [data-testid="column"] {
+                min-width: 0;
+            }
+            @media (min-width: 901px) {
+                [data-testid="stHorizontalBlock"] {
+                    align-items: stretch;
+                }
+                [data-testid="stHorizontalBlock"] > [data-testid="column"] > div {
+                    height: 100%;
+                }
+            }
+            @media (max-width: 1180px) {
                 .welcome-side-art {
                     display: none;
                 }
@@ -469,17 +494,23 @@ def render_operations_hub() -> None:
                     right: 0;
                 }
             }
-            @media (max-width: 860px) {
-                .welcome-shell {
-                    width: 100%;
-                    max-width: 100%;
-                }
+            @media (max-width: 900px) {
                 .welcome-card {
-                    min-height: 0;
                     height: auto;
                 }
                 .welcome-card p {
-                    min-height: 0;
+                    flex: 0 0 auto;
+                }
+            }
+            @media (min-width: 721px) and (max-width: 980px) {
+                .welcome-card {
+                    height: 220px;
+                }
+            }
+            @media (max-width: 720px) {
+                [data-testid="stAppViewContainer"] .main .block-container {
+                    padding-left: 0.7rem;
+                    padding-right: 0.7rem;
                 }
             }
         </style>
@@ -491,7 +522,6 @@ def render_operations_hub() -> None:
         f'<div class="welcome-stage">{welcome_patent_markup}{left_border_markup}{right_border_markup}',
         unsafe_allow_html=True,
     )
-    st.markdown('<div class="welcome-shell">', unsafe_allow_html=True)
     st.markdown('<div class="welcome-hero">', unsafe_allow_html=True)
     if logo_markup:
         st.markdown(logo_markup, unsafe_allow_html=True)
@@ -508,17 +538,23 @@ def render_operations_hub() -> None:
     st.markdown("</div>", unsafe_allow_html=True)
 
     for row in TOOL_ROWS:
-        _, left_col, right_col, _ = st.columns([0.7, 2.0, 2.0, 0.7], gap="medium")
+        if st.session_state.get("_force_single_column_layout", False):
+            single_col = st.columns(1)[0]
+            with single_col:
+                render_tool_card(row[0])
+                st.markdown('<div class="welcome-row"></div>', unsafe_allow_html=True)
+                render_tool_card(row[1])
+        else:
+            _, left_col, right_col, _ = st.columns([0.34, 1, 1, 0.34], gap="medium")
 
-        with left_col:
-            render_tool_card(row[0])
+            with left_col:
+                render_tool_card(row[0])
 
-        with right_col:
-            render_tool_card(row[1])
+            with right_col:
+                render_tool_card(row[1])
 
         st.markdown('<div class="welcome-row"></div>', unsafe_allow_html=True)
 
-    st.markdown("</div>", unsafe_allow_html=True)
     st.markdown("</div>", unsafe_allow_html=True)
 
 
